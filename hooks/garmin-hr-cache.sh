@@ -15,7 +15,7 @@ if [ -f "$GARMIN_MCP_DIR/.env" ]; then
 fi
 
 # Call garmin-connect to get today's heart rate and extract latest value
-node -e "
+HR_RESULT=$(node -e "
 const GarminConnect = require('garmin-connect');
 const { GarminConnect: GC } = GarminConnect;
 const { readFileSync, existsSync } = require('fs');
@@ -29,20 +29,7 @@ const { homedir } = require('os');
     password: process.env.GARMIN_PASSWORD || '',
   });
 
-  // Try loadToken first, fall back to login
-  let loggedIn = false;
-  if (existsSync(TOKEN_PATH)) {
-    try {
-      const token = JSON.parse(readFileSync(TOKEN_PATH, 'utf-8'));
-      await client.loadToken(token);
-      loggedIn = true;
-    } catch (e) {}
-  }
-  if (!loggedIn) {
-    await client.login();
-    const { writeFileSync } = require('fs');
-    writeFileSync(TOKEN_PATH, JSON.stringify(await client.exportToken()));
-  }
+  await client.login();
 
   const hr = await client.getHeartRate(new Date());
   const resting = hr?.restingHeartRate;
@@ -61,4 +48,9 @@ const { homedir } = require('os');
   }
   if (out) console.log(out);
 })().catch(() => {});
-" 2>/dev/null | grep -oE '[0-9]+bpm(@[0-9:]+|\(resting\))?' | tail -1 > "$CACHE_FILE"
+" 2>/dev/null | grep -oE '[0-9]+bpm(@[0-9:]+|\(resting\))?' | tail -1)
+
+# Only overwrite cache if we got data
+if [ -n "$HR_RESULT" ]; then
+    echo "$HR_RESULT" > "$CACHE_FILE"
+fi
