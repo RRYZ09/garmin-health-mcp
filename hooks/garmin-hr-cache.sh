@@ -1,10 +1,17 @@
 #!/bin/bash
 # garmin-hr-cache.sh — Fetch latest heart rate from Garmin and cache it
 # Run via cron every 5 minutes: */5 * * * * /path/to/garmin-hr-cache.sh
-# Writes latest HR to /tmp/garmin_hr_latest.txt for interoception.sh to read
+#
+# Writes latest HR to /tmp/sw_hr_latest.txt — a smartwatch-generic cache
+# path shared with other smartwatch integrations (Apple Watch, Fitbit, etc.).
+# Downstream consumers (e.g. embodied-claude interoception hook) read this
+# path regardless of which smartwatch source produced it.
+#
+# The repo root defaults to the script's parent directory. Set GARMIN_MCP_DIR
+# to override.
 
-CACHE_FILE="/tmp/garmin_hr_latest.txt"
-GARMIN_MCP_DIR="/Users/mizushima/repo/garmin-health-mcp"
+CACHE_FILE="/tmp/sw_hr_latest.txt"
+GARMIN_MCP_DIR="${GARMIN_MCP_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 export PATH="/opt/homebrew/bin:$PATH"
 
 cd "$GARMIN_MCP_DIR" || exit 1
