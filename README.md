@@ -23,7 +23,11 @@ When your AI says "you should rest", it's usually a guess. With this MCP server,
 
 ## Setup
 
-### 1. Install
+### 1. Create a Garmin Connect account
+
+Go to [https://connect.garmin.com/app/home](https://connect.garmin.com/app/home) and create a free account if you don't have one already. This is the same account your Garmin watch syncs to.
+
+### 2. Install
 
 ```bash
 git clone https://github.com/lifemate-ai/garmin-health-mcp.git
@@ -31,20 +35,18 @@ cd garmin-health-mcp
 npm install
 ```
 
-### 2. Configure
+### 3. Configure
 
-You need a Garmin Connect account (the same one your Garmin watch syncs to).
+Create a `.env` file in the project root with your Garmin Connect credentials:
 
-Set environment variables:
-
-```bash
-export GARMIN_EMAIL="your-garmin-email@example.com"
-export GARMIN_PASSWORD="your-garmin-password"
+```
+GARMIN_EMAIL="your-garmin-email@example.com"
+GARMIN_PASSWORD="your-garmin-password"
 ```
 
 On first run, the server will log in and save a token to `~/.garmin-token.json`. Subsequent runs will use the saved token without re-authenticating.
 
-### 3. Add to Claude Code
+### 4. Add to Claude Code
 
 Add to `~/.claude.json`:
 
@@ -63,7 +65,7 @@ Add to `~/.claude.json`:
 }
 ```
 
-### 4. Use with any MCP client
+### 5. Use with any MCP client
 
 The server uses stdio transport, compatible with any MCP client (Claude Code, Claude Desktop, familiar-ai, etc.).
 
